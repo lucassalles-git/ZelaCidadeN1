@@ -86,6 +86,11 @@ const criarBanco = async () => {
   console.log("Relatorio Atualizado(FINAL)");
   const resultadoFinal = await db.all(`SELECT * FROM incidentes`);
   console.table(resultadoFinal);
+
+  return db; //Retorna o banco (Entregando a chave do banco pra alguém)
 };
 
-criarBanco();
+//criarBanco() - Não será mais usado e sim o module exports
+
+//module.exports - Cria uma ponte que permite compartilhar funções entre os arquivos
+module.exports = { criarBanco };
