@@ -46,3 +46,55 @@ app.get("/incidentes", async (req, res) => {
 
   res.json(listaIncidentes); //Entrega esses dados para o cliente e fotmaro JSON
 });
+
+//Rota específica
+
+//async - para não esperar outra coisa para ser executado
+app.get("/incidentes/:id", async (req, res) => {
+  //técnica de desistruturação
+  const { id } = req.params;
+
+  const db = await criarBanco();
+
+  const incidenteEspecifico = await db.all(
+    `SELECT * FROM incidentes WHERE id = ?`,
+    [id],
+  );
+  //? - é um espaço reservado que será preenchido pelo valor da variável [id]
+  //? - SQL Injection é usado para segurança
+
+  res.json(incidenteEspecifico);
+});
+
+//Rota POST - Novos registros /Endpoints
+app.post("/incidentes", async (req, res) => {
+  const {
+    tipo_problema,
+    localizacao,
+    descricao,
+    prioridade,
+    nome_solicitante,
+    data_registro,
+    hora_registro,
+  } = req.body;
+
+  const db = await criarBanco();
+
+  await db.run(
+    `INSERT INTO incidentes(tipo_problema, localizacao, descricao, prioridade, nome_solicitante, data_registro, hora_registro) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      tipo_problema,
+      localizacao,
+      descricao,
+      prioridade,
+      nome_solicitante,
+      data_registro,
+      hora_registro,
+    ],
+  );
+
+  //Envia uma resposta de confirmação para o cliente que fez a requisição
+  res.send(
+    `Incidente novo registrado: ${tipo_problema} registrado na data ${data_registro} por ${nome_solicitante}`,
+  );
+});
