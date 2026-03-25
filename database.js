@@ -2,7 +2,11 @@ const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
 
 //Criando uma função assíncrona
+//async - ela vai fazer operações que levam tempo (como acessar arquivos), e o programa espera cada etapa terminar antes de continuar.
 const criarBanco = async () => {
+
+  //cria (ou abre, se já existir) um arquivo chamado database.db na pasta do projeto
+  //const db - é a conexão com o banco, será usada daqui pra frente
   const db = await open({
     filename: "./database.db",
     driver: sqlite3.Database,
@@ -43,14 +47,17 @@ const criarBanco = async () => {
     ("Pavimentação", "Avenida C, Bairro D", "Calçada em mau estado", "Alta", "Maria Oliveira", "14/03/2026", "14:30"),
     ("Falta de água", "Rua T, 146, Jardim Imbarie", "Moradores sem água", "Alta", "Dona Fofoca", "16/03/2026", "10:00")`);
   } else {
+    // evita duplicar registros toda vez que rodar o código
     console.log(`Banco pronto com ${checagem.total} de incidentes`);
   }
 
+  //SELECT - me traga todas as colunas
   const todosOsIncidentes = await db.all("SELECT * FROM incidentes");
   console.table(todosOsIncidentes);
 
   //Exemplo de SELECT especifico
   //Selecionar algo específico
+  //WHERE - funiona como um "só se..."
   const chamadosAna = await db.all(
     `SELECT * FROM incidentes WHERE nome_solicitante = "Ana Clara"`,
   );
@@ -77,6 +84,7 @@ const criarBanco = async () => {
   console.log("Problema do hospital resolvido");
 
   //DELETE
+  //----O WHERE aqui é muito importante — sem ele, apagaria tudo!------
   await db.run(`DELETE FROM incidentes WHERE id = 2`);
 
   console.log("Registro do ID 2 removido");
